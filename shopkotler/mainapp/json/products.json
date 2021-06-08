@@ -1,0 +1,46 @@
+[
+  {
+    "category": 1,
+    "name": "Кресло",
+    "image": "products_images/product-2.jpg",
+    "short_desc": "Удобный стул",
+    "description": "Изготовлен из высококачественных материалов",
+    "price": "4500.00",
+    "quantity": 100,
+    "created": "2021-06-01T15:59:25.306",
+    "updated": "2021-06-01T17:12:23.813"
+  },
+  {
+    "category": 1,
+    "name": "Стул широкий",
+    "image": "products_images/product-4.jpg",
+    "short_desc": "Современный дизайн",
+    "description": "Очень красивый стул",
+    "price": "5500.00",
+    "quantity": 150,
+    "created": "2021-06-01T15:59:25.306",
+    "updated": "2021-06-01T15:59:25.318"
+  },
+  {
+    "category": 2,
+    "name": "Лампа настольная Сфера",
+    "image": "products_images/product-1.jpg",
+    "short_desc": "Приятный свет",
+    "description": "Дизайнерская настольная лампа",
+    "price": "3500.00",
+    "quantity": 50,
+    "created": "2021-06-01T15:59:25.306",
+    "updated": "2021-06-01T15:59:25.318"
+  },
+  {
+    "category": 2,
+    "name": "Часы настенные",
+    "image": "products_images/product-4-sm.jpg",
+    "short_desc": "Часы из бетона",
+    "description": "Круглые дизайнерские настенные часы",
+    "price": "7000.00",
+    "quantity": 10,
+    "created": "2021-06-01T15:59:25.306",
+    "updated": "2021-06-01T17:11:52.937"
+  }
+]
