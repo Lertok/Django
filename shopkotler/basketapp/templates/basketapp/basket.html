@@ -1,0 +1,19 @@
+{% extends 'shopkotler/base.html' %}
+{% load static %}
+
+{% block js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="{% static '/basketapp/script.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    {% include 'shopkotler/includes/inc_products_menu.html' %}
+    {% if user.is_authenticated %}
+        <div class="container">
+            <div class="basket_list">
+                {% include 'basketapp/includes/inc_basket_list.html' %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
