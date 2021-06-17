@@ -19,6 +19,7 @@
             {% endif %}
         </li>
     </ul>
+    <div class="col-3">
     <a href="#" class="search"></a>
         {% if basket %}
         <a href="{% url 'basket:view' %}" class="fa fa-shopping-basket">
@@ -28,4 +29,5 @@
             </span>
         </a>
         {% endif %}
+    </div>
 </div>

@@ -3,6 +3,7 @@
 
 
 {% block content %}
+<div class="w-50 ml-3">
     <form class="form-horizontal" action="{% url 'auth:login' %}" method="post">
         {% csrf_token %}
         {{ login_form.as_p }}
@@ -19,5 +20,6 @@
             зарегистрироваться
         </a>
     </button>
+</div>
 
 {% endblock %}

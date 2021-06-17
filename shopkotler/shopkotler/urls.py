@@ -22,11 +22,14 @@ from  django.conf.urls.static import static
 from authapp import urls as authapp_urls
 # import mainapp
 from mainapp import urls as mainapp_urls
+from adminapp import urls as adminapp_urls
 from basketapp import urls as basketapp_urls
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin_staff/', include(adminapp_urls, namespace='admin_staff'), name='admin_staff'),
+    path('admin_categories/', include(adminapp_urls, namespace='admin_categories'), name='admin_categories'),
 
     path('auth/', include(authapp_urls, namespace='auth'), name='auth'),
     path('products/', include(mainapp_urls, namespace='products'), name='products'),
