@@ -1,11 +1,21 @@
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
-from adminapp.forms import ShopUserRegisterForm, CategoryRegisterForm
+from adminapp.forms import ShopUserRegisterForm, CategoryRegisterForm, ProductEditForm
 from authapp.models import ShopUser
 from django.shortcuts import get_object_or_404, render
 from mainapp.models import Product, ProductCategory
 from django.contrib.auth.decorators import user_passes_test
+
+from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+# LoginRequiredMixin проверяет есть ли права у пользователя
+
+
+class UserListView(LoginRequiredMixin, ListView):
+    model = ShopUser
+    template_name = 'adminapp/users.html'
+    context_object_name = 'objects'
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -22,26 +32,32 @@ def users(request):
     return render(request, 'adminapp/users.html', context)
 
 
-@user_passes_test(lambda u: u.is_superuser)
-def user_create(request):
-    title = 'пользователи/создание'
+class UserCreateView(CreateView):
+    model = ShopUser
+    form_class = ShopUserRegisterForm
+    template_name = 'adminapp/user_update.html'
+    success_url = reverse_lazy('admin_staff:users')
 
-    if request.method == 'POST':
-        user_form = ShopUserRegisterForm(request.POST, request.FILES)
-        if user_form.is_valid():
-            user_form.save()
-
-            return HttpResponseRedirect(reverse('admin_staff:users'))
-    else:
-        user_form = ShopUserRegisterForm()
-
-    context = {
-        'title': title,
-        'update_form': user_form,
-    }
-
-    return render(request, 'adminapp/user_update.html', context)
-
+# @user_passes_test(lambda u: u.is_superuser)
+# def user_create(request):
+#     title = 'пользователи/создание'
+#
+#     if request.method == 'POST':
+#         user_form = ShopUserRegisterForm(request.POST, request.FILES)
+#         if user_form.is_valid():
+#             user_form.save()
+#
+#             return HttpResponseRedirect(reverse('admin_staff:users'))
+#     else:
+#         user_form = ShopUserRegisterForm()
+#
+#     context = {
+#         'title': title,
+#         'update_form': user_form,
+#     }
+#
+#     return render(request, 'adminapp/user_update.html', context)
+#
 
 @user_passes_test(lambda u: u.is_superuser)
 def user_update(request, pk):
@@ -145,32 +161,118 @@ def category_delete(request, pk):
     pass
 
 
+class ProductsListView(ListView):
+    model = Product
+    template_name = 'adminapp/product_list.html'
+
+    def get_queryset(self):
+        return Product.objects.filter(category__pk=self.kwargs.get('pk'))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ProductsListView, self).get_context_data(**kwargs)
+
+        category = get_object_or_404(ProductCategory, pk=self.kwargs.get('pk'))
+
+        context.update({'category': category})
+
+        return context
+
+
 def products(request, pk):
-    title = 'админка/продукт'
+    title = 'админка/категории продуктов'
+
+    if pk == 0:
+        categories = ProductCategory.objects.filter(is_delete=False)
+        context = {
+            'title': title,
+            'objects': categories,
+        }
+
+        return render(request, 'adminapp/categories.html', context)
 
     category = get_object_or_404(ProductCategory, pk=pk)
-    products_list = Product.objects.filter(category__pk=pk).order_by('name')
+    products_category = Product.objects.filter(category__pk=pk)
 
-    content = {
+    context = {
         'title': title,
         'category': category,
-        'objects': products_list,
+        'objects': products_category,
     }
 
-    return render(request, 'adminapp/products.html', content)
+    return render(request, 'adminapp/products_list.html', context)
 
 
 def product_create(request, pk):
-    pass
+    title = 'продукты/создание'
+    product_category = get_object_or_404(ProductCategory, pk=pk)
+
+    if request.method == 'POST':
+        product_form = ProductEditForm(request.POST, request.FILES)
+        if product_form.is_valid():
+            product_form.save()
+
+            return HttpResponseRedirect(reverse('admin_products:products'), args=[pk])
+    else:
+        product_form = ProductEditForm(initial={'category': product_category})
+
+    context = {
+        'title': title,
+        'update_form': product_form,
+        'category': product_category
+    }
+
+    return render(request, 'adminapp/product_update.html', context)
 
 
 def product_read(request, pk):
-    pass
+    product = get_object_or_404(Product, pk=pk)
+    title = f'продукты/{product.name}'
+
+    context = {
+        'title': title,
+        'product': product,
+    }
+
+    return render(request, 'adminapp/product_read.html', context)
 
 
 def product_update(request, pk):
-    pass
+
+    product = get_object_or_404(Product, pk=pk)
+    title = f'продукты/{product.name}'
+
+    if request.method == 'POST':
+        product_form = ProductEditForm(request.POST, request.FILES, instance=product)
+        if product_form.is_valid():
+            product_form.save()
+
+            return HttpResponseRedirect(reverse('admin_products:product_update', args=[product_form.pk]))
+    else:
+        product_form = ProductEditForm(instance=product)
+
+    context = {
+        'title': title,
+        'form': product_form,
+        'category': product.category
+    }
+
+    return render(request, 'adminapp/product_update.html', context)
 
 
 def product_delete(request, pk):
-    pass
+    title = 'продукты/удаление'
+
+    product = get_object_or_404(Product, pk=pk)
+
+    if request.method == 'POST':
+        product.is_delete = True
+        product.save()
+
+        return HttpResponseRedirect(reverse('admin_products:products', args=[product.category.pk]))
+
+    context = {
+        'title': title,
+        'product_to_delete': product,
+    }
+
+    return render(request, 'adminapp/product_delete.html', context)

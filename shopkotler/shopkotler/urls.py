@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin_staff/', include(adminapp_urls, namespace='admin_staff'), name='admin_staff'),
     path('admin_categories/', include(adminapp_urls, namespace='admin_categories'), name='admin_categories'),
+    path('admin_products/', include(adminapp_urls, namespace='admin_products'), name='admin_products'),
 
     path('auth/', include(authapp_urls, namespace='auth'), name='auth'),
     path('products/', include(mainapp_urls, namespace='products'), name='products'),
